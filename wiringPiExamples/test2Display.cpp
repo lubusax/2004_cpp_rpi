@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <time.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
@@ -7,9 +8,29 @@
 #include <asm/ioctl.h>
 #include <fcntl.h>
 #include <unistd.h>
+
 //#include <sys/syscall.h>
 
 #define I2C_SLAVE	0x0703
+
+int nsleep(long miliseconds)
+{
+   struct timespec req, rem;
+
+   if(miliseconds > 999)
+   {   
+        req.tv_sec = (int)(miliseconds / 1000);                            /* Must be Non-Negative */
+        req.tv_nsec = (miliseconds - ((long)req.tv_sec * 1000)) * 1000000; /* Must be in range of 0 to 999999999 */
+   }   
+   else
+   {   
+        req.tv_sec = 0;                         /* Must be Non-Negative */
+        req.tv_nsec = miliseconds * 1000000;    /* Must be in range of 0 to 999999999 */
+   }   
+
+   return nanosleep(&req , &rem);
+}
+
 
 int main (void)
 {
@@ -40,12 +61,15 @@ int main (void)
   char str[10];
   char *buf = str;
 
-  buf[0] = 0xA5;
+  buf[0] = 0x00;
+  buf[1] = 0xA5;
   if (write(fileDevice,buf,1) != 1) {
       errsv = errno;
       printf("Failed to write to the i2c bus %s\n", strerror(errsv));
       printf("\n\n");
   }
+
+  nsleep(10000);
 
   return 0;
 }
