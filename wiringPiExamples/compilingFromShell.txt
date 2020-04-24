@@ -1,0 +1,2 @@
+g++ -Wall -o test1Display test1Display.cpp Display_SH1106.cpp -lwiringPi
+./test1Display
