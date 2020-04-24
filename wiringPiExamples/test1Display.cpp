@@ -12,7 +12,7 @@ int main (void)
   const int devID = 0x3C;
   Display_SH1106 display;
 
-  wiringPiSetup () ;
+  // wiringPiSetup () ;
   // It's actually a fatal error to call any of the 
   // wiringPiSetup routines more than once,
   // (you run out of file handles!)
@@ -27,7 +27,15 @@ int main (void)
   
   display.display();
   delay(2000);
-
+  display.entireDisplayOn();
+  delay(1000);
+  display.invertDisplay(1);
+  delay(1000);
+  display.invertDisplay(1);
+  delay(1000);
+  display.invertDisplay(1);
+  delay(1000);
+  display.invertDisplay(1);
   //printf ("Result of I2C Setup %d \n", result) ;
   printf ("Did something \n") ;
   

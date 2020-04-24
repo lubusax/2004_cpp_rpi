@@ -70,6 +70,8 @@ class Display_SH1106 {
 
   void SH1106_data(uint8_t c);
 
+  void entireDisplayOn(void); 
+
 
   void display();
 
