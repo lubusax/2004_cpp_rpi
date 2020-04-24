@@ -71,7 +71,7 @@ class Display_SH1106 {
   void SH1106_data(uint8_t c);
 
 
-  //void display();
+  void display();
 
  private:
   int8_t _i2caddr, _vccstate, sid, sclk, dc, rst, cs;

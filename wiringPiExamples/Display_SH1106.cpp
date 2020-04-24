@@ -1,8 +1,7 @@
-
-//#include <avr/pgmspace.h>
-//#include <util/delay.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+
 #include <wiringPi.h>
 #include <wiringPiI2C.h>
 #include "Display_SH1106.h"
@@ -80,28 +79,7 @@
   #endif
   };
 
-#define sh1106_swap(a, b) { int16_t t = a; a = b; b = t; }  
-
-// class Display_SH1106
-// {
-// public:
-//   Display_SH1106();
-// 	~Display_SH1106();
-//   void begin(
-//     uint8_t switchvcc = SH1106_SWITCHCAPVCC,
-//     uint8_t i2caddr = SH1106_I2C_ADDRESS);
-//   void invertDisplay(uint8_t i);
-//   void SH1106_command(uint8_t c);
-
-//   void SH1106_data(uint8_t c);
-
-
-//   //void display();
-
-//  private:
-//   int8_t _i2caddr, _vccstate, sid, sclk, dc, rst, cs;
-//   int _fileDevice;
-// };
+#define sh1106_swap(a, b) { int16_t t = a; a = b; b = t; }
 
 Display_SH1106::Display_SH1106(){}
 Display_SH1106::~Display_SH1106(){}
@@ -178,40 +156,42 @@ void Display_SH1106::SH1106_data(uint8_t c) {
   wiringPiI2CWrite (_fileDevice, data);
 }
 
-// void Display_SH1106::display(void) {
+void Display_SH1106::display(void) {
 	
-//   SH1106_command(SH1106_SETLOWCOLUMN | 0x0);  // low col = 0
-//   SH1106_command(SH1106_SETHIGHCOLUMN | 0x0);  // hi col = 0
-//   SH1106_command(SH1106_SETSTARTLINE | 0x0); // line #0
+  SH1106_command(SH1106_SETLOWCOLUMN | 0x0);  // low col = 0
+  SH1106_command(SH1106_SETHIGHCOLUMN | 0x0);  // hi col = 0
+  SH1106_command(SH1106_SETSTARTLINE | 0x0); // line #0
 	
-// 	byte height=64;
-// 	byte width=132; 
-// 	byte m_row = 0;
-// 	byte m_col = 2;
-	
-	
-// 	height >>= 3;
-// 	width >>= 3;
-// 	//Serial.println(width);
-	
-// 	int p = 0;
-	
-// 	byte i, j, k =0;
-	
-// 	for ( i = 0; i < height; i++) {
-		
-// 		// send a bunch of data in one xmission
-//     SH1106_command(0xB0 + i + m_row);//set page address
-//     SH1106_command(m_col & 0xf);//set lower column address
-//     SH1106_command(0x10 | (m_col >> 4));//set higher column address
+	char height=64;
+	char width=132; 
+	char m_row = 0;
+	char m_col = 2;
 
-//     for( j = 0; j < 8; j++){        
-//       Wire.beginTransmission(_i2caddr);
-//       Wire.write(0x40);
-//       for ( k = 0; k < width; k++, p++) {
-//         Wire.write(buffer[p]);
-//       }
-//       Wire.endTransmission();
-//     }
-//   }  
-// }
+  int result;
+	
+	height >>= 3;
+	width >>= 3;
+
+	printf("width >>= 3 : %d \n", width);
+	printf("height >>= 3 : %d \n", height);
+	int p = 0;
+	
+	char i, j, k =0;
+	
+	for ( i = 0; i < height; i++) {
+		
+		// send a bunch of data in one transmission
+    SH1106_command(0xB0 + i + m_row);//set page address
+    SH1106_command(m_col & 0xf);//set lower column address
+    SH1106_command(0x10 | (m_col >> 4));//set higher column address
+
+    for( j = 0; j < 8; j++){        
+      wiringPiI2CWrite (_fileDevice, 0x40); // 0x40 means we are sending data
+      for ( k = 0; k < width; k++, p++) {
+        result = wiringPiI2CWrite (_fileDevice, buffer[p]);
+        printf("result: %d \n", result);
+      }
+      //Wire.endTransmission();
+    }
+  }  
+}
