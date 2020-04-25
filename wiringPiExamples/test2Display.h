@@ -1,3 +1,4 @@
+#define MAX_WRITE_BUFFER_SIZE 32
 
 #define BLACK 0
 #define WHITE 1
@@ -55,25 +56,3 @@
 #define SH1106_LEFT_HORIZONTAL_SCROLL 0x27
 #define SH1106_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL 0x29
 #define SH1106_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL 0x2A
-
-class Display_SH1106 {
- public:
-  Display_SH1106();
-	~Display_SH1106();
-  void begin(
-    uint8_t switchvcc = SH1106_SWITCHCAPVCC,
-    uint8_t i2caddr = SH1106_I2C_ADDRESS);
-  void invertDisplay(uint8_t i);
-  void SH1106_command(uint8_t c);
-
-  void SH1106_data(uint8_t c);
-
-  void entireDisplayOn(void); 
-
-
-  void display();
-
- private:
-  int8_t _i2caddr, _vccstate, sid, sclk, dc, rst, cs;
-  int _fileDevice;
-};
