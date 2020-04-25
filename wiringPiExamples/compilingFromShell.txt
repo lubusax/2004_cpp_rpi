@@ -4,5 +4,5 @@ g++ -Wall -o test1Display test1Display.cpp Display_SH1106.cpp -lwiringPi
 g++ -Wall -o test2Display test2Display.cpp
 ./test2Display
 
-g++ -Wall -o test3Display test3Display.cpp
+g++ -Wall -o test3Display test3Display.cpp Display_SH1106.cpp
 ./test3Display

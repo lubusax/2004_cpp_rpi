@@ -1,9 +1,10 @@
+#define MAX_WRITE_BUFFER_SIZE         133
+#define SH1106_I2C_ADDRESS            0x3C // 011110+SA0+RW - 0x3C or 0x3D
+#define CONTROL_BYTE_LAST_COMMAND     0x00
 
 #define BLACK 0
 #define WHITE 1
 #define INVERSE 2
-
-#define SH1106_I2C_ADDRESS   0x3C // 011110+SA0+RW - 0x3C or 0x3D
 
 #define SH1106_128_64
 
@@ -28,8 +29,12 @@
 
 #define SH1106_SETMULTIPLEX 0xA8
 
-#define SH1106_SETLOWCOLUMN 0x00
-#define SH1106_SETHIGHCOLUMN 0x10
+#define SH1106_SETLOWCOLUMN 0x00 //deprecated LB
+#define SH1106_SETHIGHCOLUMN 0x10 //deprecated LB
+#define SH1106_SETLOWERBITSCOLUMN 0x00  // 0x00 to 0x0F
+#define SH1106_SETHIGHERBITSCOLUMN 0x10 // 0x10 to 0x1F
+
+#define SH1106_SETPAGE 0xB0 // 0xB0 to 0xB7 (8 pages)
 
 #define SH1106_SETSTARTLINE 0x40
 
@@ -56,24 +61,18 @@
 #define SH1106_VERTICAL_AND_RIGHT_HORIZONTAL_SCROLL 0x29
 #define SH1106_VERTICAL_AND_LEFT_HORIZONTAL_SCROLL 0x2A
 
+#define SH1106_NOP 0xE3
+
 class Display_SH1106 {
- public:
-  Display_SH1106();
-	~Display_SH1106();
-  void begin(
-    uint8_t switchvcc = SH1106_SWITCHCAPVCC,
-    uint8_t i2caddr = SH1106_I2C_ADDRESS);
-  void invertDisplay(uint8_t i);
-  void SH1106_command(uint8_t c);
+  public:
+    Display_SH1106();
+    ~Display_SH1106();
+    int init(); // open bus and acquire bus access
+    int sendCommand(char c1, char c2);
+    int clearDisplay();
+    int fileDevice();
+    int logo();
 
-  void SH1106_data(uint8_t c);
-
-  void entireDisplayOn(void); 
-
-
-  void display();
-
- private:
-  int8_t _i2caddr, _vccstate, sid, sclk, dc, rst, cs;
-  int _fileDevice;
+  private:
+    int _fileDevice;
 };
