@@ -5,6 +5,10 @@
 
 //https://elinux.org/Interfacing_with_I2C_Devices
 
+//https://embetronicx.com/tutorials/linux/device-drivers/ioctl-tutorial-in-linux/
+
+
+
 
 #include <stdio.h>
 #include <time.h>
@@ -17,10 +21,8 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include "test2Display.h"
-
-//#include <sys/syscall.h>
-
-#define I2C_SLAVE	0x0703
+#include <linux/i2c.h>     // needed to define I2C_SLAVE (0x0703)
+#include <linux/i2c-dev.h> // needed to define I2C_SLAVE (0x0703)
 
 int main (void)
 {
@@ -50,7 +52,7 @@ int main (void)
       strerror(errsv));
   }
 
-  char str[MAX_WRITE_BUFFER_SIZE];
+  static char str[MAX_WRITE_BUFFER_SIZE];
   char *buf = str;
 
   buf[0] = 0x00;
@@ -84,6 +86,8 @@ int main (void)
     printf("error number: %d \n",errsv);
   }
 
+  // printf("Closing Driver, ie release I2C bus access\n");
+  close(fileDevice);
 
   return 0;
 }
