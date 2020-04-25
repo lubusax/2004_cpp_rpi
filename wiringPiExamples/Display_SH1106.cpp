@@ -83,7 +83,7 @@ int Display_SH1106::clearDisplay(){
       for ( k = 0; k < 16; k++, p++) {
         str2[k+1] = 0x00; // k;
       }
-      sendCommand(0x10+j, 0x00); //set column address
+      sendCommand(0x10+j, 0x02); //set column address
       result = write(_fileDevice,buf2,17);
       errsv = errno;
       if (result<0) {
@@ -181,9 +181,10 @@ int Display_SH1106::logo(){
     for ( j = 0; j < 8; j++) {
       str2[0] = 0x40;       
       for ( k = 0; k < 16; k++, p++) {
-        str2[k+1] = buf[p]; // k;
+        str2[k+1] = buf[p];
+        //printf("char: %d %d\n",p, buf2[k+1]);
       }
-      sendCommand(0x10+j, 0x00); //set column address
+      sendCommand(0x10+j, 0x02); //set column address
       result = write(_fileDevice,buf2,17);
       errsv = errno;
       if (result<0) {

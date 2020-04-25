@@ -38,19 +38,24 @@ int main (void)
 
 
   nanosleep((const struct timespec[])
-    {{  1          /* seconds */,
+    {{  3          /* seconds */,
+        500000000L  /* nanoseconds */}}, NULL);
+  //
+
+  display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
+
+  display.logo();
+
+ 
+  
+
+  nanosleep((const struct timespec[])
+    {{  5          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
 
   display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
- 
-  display.logo();
-
-  nanosleep((const struct timespec[])
-    {{  20          /* seconds */,
-        500000000L  /* nanoseconds */}}, NULL);
-  //
-
+  
   // printf("Closing Driver, ie release I2C bus access\n");
   close(display.fileDevice());
 
