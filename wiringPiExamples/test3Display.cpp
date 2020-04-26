@@ -41,13 +41,13 @@ int main (void)
 
   display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
-  char        str[128*64/8] = LOGO_ADAFRUIT;
+  char        str[3000] = ASCII_5x7;
   char *      pStr = str;
 
   display.fullScreen(pStr);
 
   nanosleep((const struct timespec[])
-    {{  5          /* seconds */,
+    {{  30          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
 
