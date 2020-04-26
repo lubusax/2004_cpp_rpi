@@ -41,7 +41,10 @@ int main (void)
 
   display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
-  display.logoAdafruit();
+  char        str[128*64/8] = LOGO_ADAFRUIT;
+  char *      pStr = str;
+
+  display.fullScreen(pStr);
 
   nanosleep((const struct timespec[])
     {{  5          /* seconds */,

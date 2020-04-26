@@ -97,13 +97,11 @@ int Display_SH1106::fileDevice() {
   return _fileDevice;
 }
 
-int Display_SH1106::logoAdafruit(){
+int Display_SH1106::fullScreen(char * pPicture){
   char      i, j, k;
   int       result, errsv;
-  static char logoAdafruit[64*16] = LOGO_ADAFRUIT;
-  char *      p_logoAdafruit = logoAdafruit;
-  char        str2[17];
-  char *      buf2 = str2;
+  char        str[17];
+  char *      pStr = str;
   char columnOffset = 0x02;
 
   int p = 0;
@@ -111,13 +109,13 @@ int Display_SH1106::logoAdafruit(){
   for ( i = 0; i < 8; i++) {
     sendCommand(SH1106_SETPAGE + i, SH1106_NOP);
     for ( j = 0; j < 8; j++) {
-      str2[0] = 0x40;       
+      str[0] = 0x40;       
       for ( k = 0; k < 16; k++, p++) {
-        str2[k+1] = p_logoAdafruit[p];
+        str[k+1] = pPicture[p];
         //printf("char: %d %d\n",p, buf2[k+1]);
       }
       sendCommand(0x10+j, columnOffset); //set column address
-      result = write(_fileDevice,buf2,17);
+      result = write(_fileDevice,pStr,17);
       errsv = errno;
       if (result<0) {
         printf(

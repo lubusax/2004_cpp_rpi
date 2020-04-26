@@ -71,7 +71,7 @@ class Display_SH1106 {
     int sendCommand(char c1, char c2);
     int clearDisplay();
     int fileDevice();
-    int logoAdafruit();
+    int fullScreen(char * pPicture);
 
   private:
     int _fileDevice;
