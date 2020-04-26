@@ -34,9 +34,6 @@ int main (void)
 
   display.clearDisplay();
 
-  //display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
-
-
   nanosleep((const struct timespec[])
     {{  3          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
@@ -44,10 +41,7 @@ int main (void)
 
   display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
-  display.logo();
-
- 
-  
+  display.logoAdafruit();
 
   nanosleep((const struct timespec[])
     {{  5          /* seconds */,
@@ -56,7 +50,7 @@ int main (void)
 
   display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
   
-  // printf("Closing Driver, ie release I2C bus access\n");
+  // printf("Close Driver, ie release I2C bus access\n");
   close(display.fileDevice());
 
   return 0;
