@@ -97,7 +97,7 @@ int Display_SH1106::fileDevice() {
   return _fileDevice;
 }
 
-int Display_SH1106::fullScreen(char * pPicture){
+int Display_SH1106::fillFullScreen(char * pFullScreen){
   char      i, j, k;
   int       result, errsv;
   char        str[17];
@@ -111,7 +111,7 @@ int Display_SH1106::fullScreen(char * pPicture){
     for ( j = 0; j < 8; j++) {
       str[0] = 0x40;       
       for ( k = 0; k < 16; k++, p++) {
-        str[k+1] = pPicture[p];
+        str[k+1] = pFullScreen[p];
         //printf("char: %d %d\n",p, buf2[k+1]);
       }
       sendCommand(0x10+j, columnOffset); //set column address

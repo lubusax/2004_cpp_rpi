@@ -71,10 +71,11 @@ class Display_SH1106 {
     int sendCommand(char c1, char c2);
     int clearDisplay();
     int fileDevice();
-    int fullScreen(char * pPicture);
+    int fillFullScreen(char * pFullScreen);
 
   private:
     int _fileDevice;
+    char * _pfullScreen {nullptr};
 };
 
 // 1024 bytes
