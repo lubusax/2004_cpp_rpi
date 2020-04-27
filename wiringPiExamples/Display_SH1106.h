@@ -72,9 +72,10 @@ class Display_SH1106 {
     int clearDisplay();
     int getFileDevice();
     int fillFullScreen(const char * pFullScreen);
-    int getFullScreen(const char * file);
+    int readFullScreen(const char * file);
     int writeFullScreen(const char * file);
     int setFullScreen(const char * pFullScreen);
+    const char * getFullScreen();
 
   private:
     int _fileDevice;

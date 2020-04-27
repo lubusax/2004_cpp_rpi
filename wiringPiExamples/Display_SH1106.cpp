@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <linux/i2c.h>     // needed to define I2C_SLAVE (0x0703)
 #include <linux/i2c-dev.h> // needed to define I2C_SLAVE (0x0703)
+#include <fstream>
+#include <iostream>
 
 #include "Display_SH1106.h"
 
@@ -67,8 +69,8 @@ int Display_SH1106::sendCommand(const char c1, const char c2) {
 }
 
 int Display_SH1106::clearDisplay(){
-  char        emptyFullScreen[128*64/8] = {0};
-  char *      pEmptyFullScreen = emptyFullScreen; 
+  char        emptyFullScreen[1024] = {0};
+  const char *      pEmptyFullScreen = (const char *) emptyFullScreen; 
   return fillFullScreen(pEmptyFullScreen);
 }
 
@@ -108,15 +110,41 @@ int Display_SH1106::fillFullScreen(const char * pFullScreen){
 }
 // write the contents of some external file
 // into the class variable _pfullScreen
-int Display_SH1106::getFullScreen(const char * file) {
-  //_pfullScreen
+int Display_SH1106::readFullScreen(const char * file) {
+
+  char charArray[1024];
+  std::fstream in_file {file, std::ios::in | std::ios::binary};
+
+  if (!in_file) {
+    std::cerr << "file open error " << std::endl;
+    return -1; 
+  }
+  
+  for ( int i = 0; i < 1024; i++) in_file.get(charArray[i]);
+
+  in_file.close();
+
+  _pFullScreen = charArray;
   return 0;
 }
 
 // write the contents of the class variable _pfullScreen 
 // into some external file
 int Display_SH1106::writeFullScreen(const char * file) {
-  //_pfullScreen
+  std::fstream out_file {file, std::ios::out | std::ios::binary};
+
+  if (!out_file) {
+    std::cerr << "file open error " << std::endl;
+    return -1; 
+  }
+
+  for (int i = 0; i < 1024; i++) out_file.put(_pFullScreen[i]);
+
+  nanosleep((const struct timespec[])
+    {{  2          /* seconds */,
+        500000000L  /* nanoseconds */}}, NULL);
+
+  out_file.close();
   return 0;
 }
 
@@ -125,4 +153,8 @@ int Display_SH1106::writeFullScreen(const char * file) {
 int Display_SH1106::setFullScreen(const char * pFullScreen){
   _pFullScreen = (char *) pFullScreen; 
   return 0;
+}
+
+const char * Display_SH1106::getFullScreen() {
+  return _pFullScreen;
 }

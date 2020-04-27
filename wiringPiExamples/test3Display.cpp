@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
-#include <string.h>
+#include <string>
 #include <sys/ioctl.h>
 #include <asm/ioctl.h>
 #include <fcntl.h>
@@ -27,6 +27,8 @@
 
 #include "Display_SH1106.h"
 
+#define MAX_SIZE_FILE  8000 
+
 int main (void)
 {
   Display_SH1106 display;
@@ -38,47 +40,31 @@ int main (void)
   display.clearDisplay();
 
   nanosleep((const struct timespec[])
-    {{  0          /* seconds */,
+    {{  2          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
-
-  std::ifstream in_file {"compilingFromShell.txt"};
-  std::string line{};
-  char c;
-
-  std::ofstream out_file {"testOutFile.txt"};
-
-  if (!in_file or !out_file) {
-    std::cerr << "file open error " << std::endl;
-    return 1; // exit the program (main)
-  }
-
-  while (in_file.get(c))
-    out_file.put(c);
-
-  out_file.close();
-  in_file.close();
-
-  // std::ifstream in_file;
-  // std::string filename;
-  // std::cout << "Enter the filename ";
-  // std::cin >> filename;
+  
+  char charArray[] = LOGO_ADAFRUIT;
+  // int size = sizeof charArray/ sizeof charArray[0];
+  //std::cout << size << std::endl;
+  
 
   display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
-  char        str[3000] = LOGO_ADAFRUIT;
-  char *      pStr = str;
+  display.readFullScreen("testOutFile");
 
-  display.fillFullScreen(pStr);
+  //display.setFullScreen((const char *) charArray);
+  display.fillFullScreen(display.getFullScreen());
+  //display.writeFullScreen("testOutFile");
 
   nanosleep((const struct timespec[])
-    {{  0          /* seconds */,
+    {{  12         /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
 
   display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
   
-  // printf("Close Driver, ie release I2C bus access\n");
+  // printf("Close Driver equals to release I2C bus access\n");
   close(display.getFileDevice());
 
   return 0;
