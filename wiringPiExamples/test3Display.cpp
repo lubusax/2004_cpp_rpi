@@ -41,24 +41,22 @@ int main (void)
     {{  0          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
-  //std::string fileName {"compilingFromShell.txt"};
+
   std::ifstream in_file {"compilingFromShell.txt"};
   std::string line{};
+  char c;
 
-  //in_file.open(fileName);
+  std::ofstream out_file {"testOutFile.txt"};
 
-  if (in_file) {
-    std::cout << "File is open " << std::endl;
-    std::getline(in_file,line);
-    std::cout << line << std::endl;
-    std::getline(in_file,line);
-    std::cout << line << std::endl;
-    std::getline(in_file,line);
-    std::cout << line << std::endl;
-  } else {
-    std::cout << "Could not open the file " << std::endl;
+  if (!in_file or !out_file) {
+    std::cerr << "file open error " << std::endl;
+    return 1; // exit the program (main)
   }
 
+  while (in_file.get(c))
+    out_file.put(c);
+
+  out_file.close();
   in_file.close();
 
   // std::ifstream in_file;
