@@ -68,14 +68,17 @@ class Display_SH1106 {
     Display_SH1106();
     ~Display_SH1106();
     int init(); // open bus and acquire bus access
-    int sendCommand(char c1, char c2);
+    int sendCommand(const char c1, const char c2);
     int clearDisplay();
-    int fileDevice();
-    int fillFullScreen(char * pFullScreen);
+    int getFileDevice();
+    int fillFullScreen(const char * pFullScreen);
+    int getFullScreen(const char * file);
+    int writeFullScreen(const char * file);
+    int setFullScreen(const char * pFullScreen);
 
   private:
     int _fileDevice;
-    char * _pfullScreen {nullptr};
+    char * _pFullScreen {nullptr};
 };
 
 // 1024 bytes

@@ -48,7 +48,7 @@ int Display_SH1106::init() {
   return result;
 }
 
-int Display_SH1106::sendCommand(char c1, char c2) { 
+int Display_SH1106::sendCommand(const char c1, const char c2) { 
   static char   str[3] = {0};
   char *        buf = str;
   str[0] = 0x00;
@@ -67,42 +67,21 @@ int Display_SH1106::sendCommand(char c1, char c2) {
 }
 
 int Display_SH1106::clearDisplay(){
-  char        i, j;
-  int         result, errsv;
-  char        str[17] = {0}; //sh1106 moves to the next column 16 times
-  char *      buf = str;
-  str[0]     = 0x40;
-  char columnOffset = 0x02;
-  //sh1106 has 132 columns but the display shows only 128
-  //this is why there is an offset of 2 columns
-
-  for ( i = 0; i < 8; i++) {
-    sendCommand(SH1106_SETPAGE + i, SH1106_NOP);
-    for ( j = 0; j < 8; j++) {
-      sendCommand(0x10+j, columnOffset); //set column address
-      result = write(_fileDevice,buf,17);
-      errsv = errno;
-      if (result<0) {
-        printf(
-          "Failed to write to the i2c bus commands (clear Display) %s\n", strerror(errsv));
-        printf("error number: %d \n",errsv);
-      }
-    }
-  }  
-  
-  return result;
+  char        emptyFullScreen[128*64/8] = {0};
+  char *      pEmptyFullScreen = emptyFullScreen; 
+  return fillFullScreen(pEmptyFullScreen);
 }
 
-int Display_SH1106::fileDevice() {
+int Display_SH1106::getFileDevice() {
   return _fileDevice;
 }
 
-int Display_SH1106::fillFullScreen(char * pFullScreen){
-  char      i, j, k;
-  int       result, errsv;
-  char        str[17];
-  char *      pStr = str;
-  char columnOffset = 0x02;
+int Display_SH1106::fillFullScreen(const char * pFullScreen){
+  char    i, j, k       {0};
+  int     result, errsv {0};
+  char    str[17]       {0};
+  char *  pStr          =str;
+  char    columnOffset  {0x02};
 
   int p = 0;
 
@@ -126,4 +105,24 @@ int Display_SH1106::fillFullScreen(char * pFullScreen){
   }  
   
   return result;
+}
+// write the contents of some external file
+// into the class variable _pfullScreen
+int Display_SH1106::getFullScreen(const char * file) {
+  //_pfullScreen
+  return 0;
+}
+
+// write the contents of the class variable _pfullScreen 
+// into some external file
+int Display_SH1106::writeFullScreen(const char * file) {
+  //_pfullScreen
+  return 0;
+}
+
+// write the contents of the passed function variable pfullScreen 
+// into the class variable _pfullScreen
+int Display_SH1106::setFullScreen(const char * pFullScreen){
+  _pFullScreen = (char *) pFullScreen; 
+  return 0;
 }

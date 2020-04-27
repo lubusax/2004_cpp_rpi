@@ -56,7 +56,7 @@ int main (void)
   display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
   
   // printf("Close Driver, ie release I2C bus access\n");
-  close(display.fileDevice());
+  close(display.getFileDevice());
 
   return 0;
 }
