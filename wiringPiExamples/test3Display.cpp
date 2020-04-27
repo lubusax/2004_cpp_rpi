@@ -9,8 +9,6 @@
 
 // https://linux.die.net/man/3/explain_ioctl
 
-
-
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
@@ -23,6 +21,9 @@
 #include <unistd.h>
 #include <linux/i2c.h>     // needed to define I2C_SLAVE (0x0703)
 #include <linux/i2c-dev.h> // needed to define I2C_SLAVE (0x0703)
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 #include "Display_SH1106.h"
 
@@ -37,9 +38,33 @@ int main (void)
   display.clearDisplay();
 
   nanosleep((const struct timespec[])
-    {{  3          /* seconds */,
+    {{  0          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
+  //std::string fileName {"compilingFromShell.txt"};
+  std::ifstream in_file {"compilingFromShell.txt"};
+  std::string line{};
+
+  //in_file.open(fileName);
+
+  if (in_file) {
+    std::cout << "File is open " << std::endl;
+    std::getline(in_file,line);
+    std::cout << line << std::endl;
+    std::getline(in_file,line);
+    std::cout << line << std::endl;
+    std::getline(in_file,line);
+    std::cout << line << std::endl;
+  } else {
+    std::cout << "Could not open the file " << std::endl;
+  }
+
+  in_file.close();
+
+  // std::ifstream in_file;
+  // std::string filename;
+  // std::cout << "Enter the filename ";
+  // std::cin >> filename;
 
   display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
@@ -49,7 +74,7 @@ int main (void)
   display.fillFullScreen(pStr);
 
   nanosleep((const struct timespec[])
-    {{  30          /* seconds */,
+    {{  0          /* seconds */,
         500000000L  /* nanoseconds */}}, NULL);
   //
 
