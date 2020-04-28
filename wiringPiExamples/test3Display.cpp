@@ -27,45 +27,36 @@
 
 #include "Display_SH1106.h"
 
-#define MAX_SIZE_FILE  8000 
-
 int main (void)
 {
   Display_SH1106 display;
-
   display.init();
-
-  display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
-
+  display.sendCommand(SH1106_DISPLAYON, SH1106_NOP);
   display.clearDisplay();
+  display.sleep(0,100);
 
-  nanosleep((const struct timespec[])
-    {{  2          /* seconds */,
-        500000000L  /* nanoseconds */}}, NULL);
-  //
+  display.readFullScreen("testOutFile");
+  char originalArray[] = LOGO_ADAFRUIT;
   
-  char charArray[] = LOGO_ADAFRUIT;
+
   // int size = sizeof charArray/ sizeof charArray[0];
   //std::cout << size << std::endl;
   
 
-  display.sendCommand(SH1106_DISPLAYON, SH1106_DISPLAYALLON_RESUME);
 
+  display.setFullScreen(originalArray);
+  display.writeFullScreen("testOutFile");
   display.readFullScreen("testOutFile");
 
-  //display.setFullScreen((const char *) charArray);
-  display.fillFullScreen(display.getFullScreen());
+  char copyFromFileArray[1024];
+  char * copy = copyFromFileArray;
+  copy = display.getFullScreen();
+  //std::cout << copy << std::endl;
+  display.fillFullScreen(copy);
   //display.writeFullScreen("testOutFile");
 
-  nanosleep((const struct timespec[])
-    {{  12         /* seconds */,
-        500000000L  /* nanoseconds */}}, NULL);
-  //
-
+  display.sleep(4,100);
   display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
-  
-  // printf("Close Driver equals to release I2C bus access\n");
-  close(display.getFileDevice());
-
+  close(display.getFileDevice());// Close Driver = release I2C bus access
   return 0;
 }

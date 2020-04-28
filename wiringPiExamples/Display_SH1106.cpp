@@ -82,7 +82,7 @@ int Display_SH1106::fillFullScreen(const char * pFullScreen){
   char    i, j, k       {0};
   int     result, errsv {0};
   char    str[17]       {0};
-  char *  pStr          =str;
+  // char *  pStr          =str;
   char    columnOffset  {0x02};
 
   int p = 0;
@@ -96,12 +96,14 @@ int Display_SH1106::fillFullScreen(const char * pFullScreen){
         //printf("char: %d %d\n",p, buf2[k+1]);
       }
       sendCommand(0x10+j, columnOffset); //set column address
-      result = write(_fileDevice,pStr,17);
+      result = write(_fileDevice,(char*)str,17);
       errsv = errno;
       if (result<0) {
-        printf(
-          "Failed to write to the i2c bus commands (clear Display) %s\n", strerror(errsv));
-        printf("error number: %d \n",errsv);
+        std::cerr << "Failed to write -> i2c bus(fillFullScreen)" << std::endl;
+        return result; 
+        // printf(
+        //   "Failed to write to the i2c bus commands (clear Display) %s\n", strerror(errsv));
+        // printf("error number: %d \n",errsv);
       }
     }
   }  
@@ -140,21 +142,30 @@ int Display_SH1106::writeFullScreen(const char * file) {
 
   for (int i = 0; i < 1024; i++) out_file.put(_pFullScreen[i]);
 
-  nanosleep((const struct timespec[])
-    {{  2          /* seconds */,
-        500000000L  /* nanoseconds */}}, NULL);
-
   out_file.close();
   return 0;
 }
 
 // write the contents of the passed function variable pfullScreen 
 // into the class variable _pfullScreen
-int Display_SH1106::setFullScreen(const char * pFullScreen){
-  _pFullScreen = (char *) pFullScreen; 
+int Display_SH1106::setFullScreen(char * pFullScreen){
+  _pFullScreen = pFullScreen; 
   return 0;
 }
 
-const char * Display_SH1106::getFullScreen() {
+char * Display_SH1106::getFullScreen() {
   return _pFullScreen;
+}
+
+int Display_SH1106::sleep(int seconds, int milliseconds){
+  if (seconds<0) seconds=0;
+  if (seconds>60) seconds =60;
+  if (milliseconds<0) milliseconds=0;
+  if (milliseconds>999) milliseconds =999;
+  if (seconds==0 and milliseconds==0) return -1;
+  long nanoseconds = (long) (milliseconds*1000000);
+  struct timespec req, rem;
+  req.tv_sec = seconds;
+  req.tv_nsec = nanoseconds;
+  return nanosleep(&req , &rem);
 }

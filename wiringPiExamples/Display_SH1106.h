@@ -74,12 +74,14 @@ class Display_SH1106 {
     int fillFullScreen(const char * pFullScreen);
     int readFullScreen(const char * file);
     int writeFullScreen(const char * file);
-    int setFullScreen(const char * pFullScreen);
-    const char * getFullScreen();
+    int setFullScreen(char * pFullScreen);
+    char * getFullScreen();
+    int sleep(int seconds, int milliseconds);
 
   private:
     int _fileDevice;
-    char * _pFullScreen {nullptr};
+    char _fullScreen[1024];
+    char * _pFullScreen = _fullScreen;
 };
 
 // 1024 bytes
