@@ -1,3 +1,7 @@
+/* Display_SH1106.h */
+#ifndef __DISPLAY_SH1106_H__
+#define __DISPLAY_SH1106_H__
+
 #define MAX_WRITE_BUFFER_SIZE         133
 #define SH1106_I2C_ADDRESS            0x3C // 011110+SA0+RW - 0x3C or 0x3D
 #define CONTROL_BYTE_LAST_COMMAND     0x00
@@ -77,6 +81,7 @@ class Display_SH1106 {
     int setFullScreen(char const * const pFullScreen);
     char * getFullScreen();
     int sleep(int seconds, int milliseconds);
+    int compare(char const * const pFullScreen);
 
   private:
     int _fileDevice;
@@ -457,3 +462,4 @@ class Display_SH1106 {
     0x01, 0xE0}
 
 
+#endif  /* Display_SH1106.h   __DISPLAY_SH1106_H__  */

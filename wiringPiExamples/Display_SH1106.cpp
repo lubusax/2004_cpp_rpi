@@ -79,11 +79,11 @@ int Display_SH1106::getFileDevice() {
 }
 
 int Display_SH1106::fillFullScreen(char const * const pFullScreen){
-  char    i, j, k       {0};
+  int     i, j, k       {0};
   int     result, errsv {0};
   char    str[17]       {0};
   // char *  pStr          =str;
-  char    columnOffset  {0x02};
+  int    columnOffset  {0x02};
   char originalArray[] = LOGO_ADAFRUIT;
 
   int p = 0;
@@ -93,15 +93,19 @@ int Display_SH1106::fillFullScreen(char const * const pFullScreen){
     for ( j = 0; j < 8; j++) {
       str[0] = 0x40;       
       for ( k = 0; k < 16; k++, p++) {
+        //str[k+1] = originalArray[p];
         str[k+1] = pFullScreen[p];
         if (pFullScreen[p]!=originalArray[p]){
-          printf(" %d : got %d, original %d\n",p,_pFullScreen[p],originalArray[p] );
+          printf("fill %d : got %d, original %d\n",
+            p, pFullScreen[p],originalArray[p] );
         }
         //printf("char: %d %d\n",p, buf2[k+1]);
       }
       sendCommand(0x10+j, columnOffset); //set column address
+
       result = write(_fileDevice,(char*)str,17);
       errsv = errno;
+      sleep(0,10);
       if (result<0) {
         std::cerr << "Failed to write -> i2c bus(fillFullScreen)" << std::endl;
         return result; 
@@ -131,10 +135,11 @@ int Display_SH1106::readFullScreen(char const * const file) {
   for ( int i = 0; i < 1024; i++) {
     in_file.get(charArray[i]);
     if (charArray[i]!=originalArray[i]){
-      printf(" %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
+      printf("read %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
     }
   }
-
+  printf("read");
+  compare(charArray);
   in_file.close();
 
   _pFullScreen = charArray;
@@ -155,7 +160,7 @@ int Display_SH1106::writeFullScreen(char const * const file) {
   for (int i = 0; i < 1024; i++) {
     out_file.put(_pFullScreen[i]);
     if (_pFullScreen[i]!=originalArray[i]){
-      printf(" %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
+      printf("write %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
     }
   }
 
@@ -185,4 +190,23 @@ int Display_SH1106::sleep(int seconds, int milliseconds){
   req.tv_sec = seconds;
   req.tv_nsec = nanoseconds;
   return nanosleep(&req , &rem);
+}
+
+int Display_SH1106::compare(char const * const pFullScreen){
+
+  char originalArray[] = LOGO_ADAFRUIT;
+
+  int p = 0;
+  int counter =0;
+  for ( p = 0; p < 1024; p++) {
+    if (pFullScreen[p]!=originalArray[p]){
+      counter ++;
+      //printf("compare %d : got %d, original %d\n",
+      //  p, pFullScreen[p],originalArray[p] );
+    }
+  }
+  printf("compare counter %d \n", counter );
+      
+  
+  return 1;
 }

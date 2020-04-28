@@ -32,10 +32,10 @@ int main (void)
   Display_SH1106 display;
   display.init();
   display.sendCommand(SH1106_DISPLAYON, SH1106_NOP);
-  display.clearDisplay();
+  //display.clearDisplay();
   display.sleep(0,100);
 
-  display.readFullScreen("testOutFile");
+  //display.readFullScreen("testOutFile");
   char originalArray[] = LOGO_ADAFRUIT;
   
 
@@ -52,11 +52,11 @@ int main (void)
   char * copy = copyFromFileArray;
   copy = display.getFullScreen();
   //std::cout << copy << std::endl;
-  display.fillFullScreen(copy);
+  display.compare(copy);
   //display.writeFullScreen("testOutFile");
 
-  display.sleep(4,100);
-  display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
+  //display.sleep(4,100);
+  //display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
   close(display.getFileDevice());// Close Driver = release I2C bus access
   return 0;
 }
