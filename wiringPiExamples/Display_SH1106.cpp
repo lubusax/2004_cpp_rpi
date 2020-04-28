@@ -78,12 +78,13 @@ int Display_SH1106::getFileDevice() {
   return _fileDevice;
 }
 
-int Display_SH1106::fillFullScreen(const char * pFullScreen){
+int Display_SH1106::fillFullScreen(char const * const pFullScreen){
   char    i, j, k       {0};
   int     result, errsv {0};
   char    str[17]       {0};
   // char *  pStr          =str;
   char    columnOffset  {0x02};
+  char originalArray[] = LOGO_ADAFRUIT;
 
   int p = 0;
 
@@ -93,6 +94,9 @@ int Display_SH1106::fillFullScreen(const char * pFullScreen){
       str[0] = 0x40;       
       for ( k = 0; k < 16; k++, p++) {
         str[k+1] = pFullScreen[p];
+        if (pFullScreen[p]!=originalArray[p]){
+          printf(" %d : got %d, original %d\n",p,_pFullScreen[p],originalArray[p] );
+        }
         //printf("char: %d %d\n",p, buf2[k+1]);
       }
       sendCommand(0x10+j, columnOffset); //set column address
@@ -110,19 +114,26 @@ int Display_SH1106::fillFullScreen(const char * pFullScreen){
   
   return result;
 }
+
 // write the contents of some external file
 // into the class variable _pfullScreen
-int Display_SH1106::readFullScreen(const char * file) {
+int Display_SH1106::readFullScreen(char const * const file) {
 
   char charArray[1024];
   std::fstream in_file {file, std::ios::in | std::ios::binary};
+  char originalArray[] = LOGO_ADAFRUIT;
 
   if (!in_file) {
     std::cerr << "file open error " << std::endl;
     return -1; 
   }
   
-  for ( int i = 0; i < 1024; i++) in_file.get(charArray[i]);
+  for ( int i = 0; i < 1024; i++) {
+    in_file.get(charArray[i]);
+    if (charArray[i]!=originalArray[i]){
+      printf(" %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
+    }
+  }
 
   in_file.close();
 
@@ -132,15 +143,21 @@ int Display_SH1106::readFullScreen(const char * file) {
 
 // write the contents of the class variable _pfullScreen 
 // into some external file
-int Display_SH1106::writeFullScreen(const char * file) {
+int Display_SH1106::writeFullScreen(char const * const file) {
   std::fstream out_file {file, std::ios::out | std::ios::binary};
+  char originalArray[] = LOGO_ADAFRUIT;
 
   if (!out_file) {
     std::cerr << "file open error " << std::endl;
     return -1; 
   }
 
-  for (int i = 0; i < 1024; i++) out_file.put(_pFullScreen[i]);
+  for (int i = 0; i < 1024; i++) {
+    out_file.put(_pFullScreen[i]);
+    if (_pFullScreen[i]!=originalArray[i]){
+      printf(" %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
+    }
+  }
 
   out_file.close();
   return 0;
@@ -148,8 +165,8 @@ int Display_SH1106::writeFullScreen(const char * file) {
 
 // write the contents of the passed function variable pfullScreen 
 // into the class variable _pfullScreen
-int Display_SH1106::setFullScreen(char * pFullScreen){
-  _pFullScreen = pFullScreen; 
+int Display_SH1106::setFullScreen(char const * const pFullScreen){
+  _pFullScreen = (char *) pFullScreen; 
   return 0;
 }
 
