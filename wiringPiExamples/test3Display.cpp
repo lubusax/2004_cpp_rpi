@@ -42,10 +42,11 @@ int main (void)
   
   //display.setFullScreen(originalArray);
   //display.writeFullScreen("testOutFile");
-  display.readFullScreen("testOutFile");
+  for (int i=0; i < 64; i++) display.drawPixel(i,i);
+
   display.fillFullScreen();
-  do { std::cout << '\n' << "Press return to continue...";
-  } while (!std::cin.get());
+  display.waitForReturnKey();
+  
   //display.clearDisplay();
   //display.sleep(4,100);
   display.sendCommand(SH1106_INVERTDISPLAY, SH1106_COMSCANDEC);

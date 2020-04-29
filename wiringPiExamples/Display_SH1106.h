@@ -12,8 +12,8 @@
 
 #define SH1106_128_64
 
-#define SH1106_LCDWIDTH    128
-#define SH1106_LCDHEIGHT   64
+#define SH1106_WIDTH    128
+#define SH1106_HEIGHT   64
 
 #define SH1106_SETCONTRAST 0x81
 #define SH1106_DISPLAYALLON_RESUME 0xA4
@@ -81,10 +81,17 @@ class Display_SH1106 {
     int setFullScreen(char const * const pFullScreen);
     char * getFullScreen();
     int sleep(int seconds, int milliseconds);
-    //void writePixel(int16_t x, int16_t y, uint16_t color);
+    void writePixel(int16_t x, int16_t y, uint16_t color);
+    void drawPixel(int16_t x, int16_t y, uint16_t color);
+    void drawPixel(int16_t x, int16_t y);
+    void drawChar(int16_t x, int16_t y, unsigned char c,
+                            uint16_t color, uint16_t bg, uint8_t size_x,
+                            uint8_t size_y);
+    void waitForReturnKey();
 
   private:
-    int _fileDevice;
+    int _fileDevice, _width, _height;
+    
     char _fullScreen2[8][128];
     char _fullScreen[1024];
     char * _pFullScreen = _fullScreen;

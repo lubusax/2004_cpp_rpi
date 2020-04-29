@@ -24,6 +24,9 @@ int Display_SH1106::init() {
   const char *  device    = "/dev/i2c-1" ;
   int           result, errsv = 0;
 
+  _width = SH1106_WIDTH;  //128
+  _height = SH1106_HEIGHT; //64
+
   // opening this file open, we open the bus
     // (acquire I2C bus access) for reading and writing.
   if ((_fileDevice = open(device, O_RDWR)) >= 0) {
@@ -165,6 +168,67 @@ int Display_SH1106::sleep(int seconds, int milliseconds){
   return nanosleep(&req , &rem);
 }
 
-// void Display_SH1106::writePixel(int16_t x, int16_t y, uint16_t color) {
-//   drawPixel(x, y, color);
-// }
+void Display_SH1106::writePixel(int16_t x, int16_t y, uint16_t color) {
+  drawPixel(x, y, color);
+  return;
+}
+
+void Display_SH1106::drawPixel(int16_t x, int16_t y, uint16_t color) {
+  drawPixel(x,y);
+  return;
+}
+
+void Display_SH1106::drawPixel(int16_t x, int16_t y) {
+  if (x>=0 and x< _width and y>=0 and y<_height){
+    int page = y>>3;
+    int bitNumber = y & 0b111;
+    int index = page * _width + x;
+    _fullScreen[index] = _fullScreen[index] | (1<<bitNumber);
+  }
+  else {
+    std::cerr << "Trying to draw a pixel out of limits*" << std::endl;
+    return;
+  }
+  return;
+}
+void Display_SH1106::waitForReturnKey() {
+  do { std::cout << '\n' << "Press return to continue...";
+    } while (!std::cin.get());
+  return;
+}
+
+void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c,
+                            uint16_t color, uint16_t bg, uint8_t size_x,
+                            uint8_t size_y) {
+  drawChar(x,y,c);
+  return;
+}
+
+void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c) {
+  // define gfxFont
+  c               -= (uint8_t)pgm_read_byte(&gfxFont->first);
+  GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
+  uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
+  uint16_t  bo    = pgm_read_word(&glyph->bitmapOffset);
+  uint8_t   w     = pgm_read_byte(&glyph->width),
+            h     = pgm_read_byte(&glyph->height);
+  int8_t    xo    = pgm_read_byte(&glyph->xOffset),
+            yo    = pgm_read_byte(&glyph->yOffset);
+  uint8_t   xx, yy, bits = 0, bit = 0;
+  int16_t   xo16 = 0, yo16 = 0;
+
+  // Todo: Add character clipping here
+
+  for (yy = 0; yy < h; yy++) {
+    for (xx = 0; xx < w; xx++) {
+      if (!(bit++ & 7)) {
+        bits = pgm_read_byte(&bitmap[bo++]);
+      }
+      if (bits & 0x80) {
+          drawPixel(x + xo + xx, y + yo + yy);
+      }
+      bits <<= 1;
+    }
+  }
+  return;
+}
