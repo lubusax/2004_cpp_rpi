@@ -75,13 +75,12 @@ class Display_SH1106 {
     int sendCommand(const char c1, const char c2);
     int clearDisplay();
     int getFileDevice();
-    int fillFullScreen(char const * const pFullScreen);
+    int fillFullScreen();
     int readFullScreen(char const * const file);
     int writeFullScreen(char const * const file);
     int setFullScreen(char const * const pFullScreen);
     char * getFullScreen();
     int sleep(int seconds, int milliseconds);
-    int compare(char const * const pFullScreen);
 
   private:
     int _fileDevice;

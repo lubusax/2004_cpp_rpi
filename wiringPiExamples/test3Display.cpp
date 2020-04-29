@@ -32,28 +32,17 @@ int main (void)
   Display_SH1106 display;
   display.init();
   display.sendCommand(SH1106_DISPLAYON, SH1106_NOP);
-  //display.clearDisplay();
-  display.sleep(0,100);
+  display.clearDisplay();
 
-  //display.readFullScreen("testOutFile");
   char originalArray[] = LOGO_ADAFRUIT;
   
-
   // int size = sizeof charArray/ sizeof charArray[0];
   //std::cout << size << std::endl;
   
-
-
   display.setFullScreen(originalArray);
   display.writeFullScreen("testOutFile");
   display.readFullScreen("testOutFile");
-
-  char copyFromFileArray[1024];
-  char * copy = copyFromFileArray;
-  copy = display.getFullScreen();
-  //std::cout << copy << std::endl;
-  display.compare(copy);
-  //display.writeFullScreen("testOutFile");
+  display.fillFullScreen();
 
   //display.sleep(4,100);
   //display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);

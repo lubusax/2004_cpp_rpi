@@ -69,22 +69,22 @@ int Display_SH1106::sendCommand(const char c1, const char c2) {
 }
 
 int Display_SH1106::clearDisplay(){
-  char        emptyFullScreen[1024] = {0};
-  const char *      pEmptyFullScreen = (const char *) emptyFullScreen; 
-  return fillFullScreen(pEmptyFullScreen);
+  for ( int i = 0; i < 1024; i++) _fullScreen[i]= 0;
+  return fillFullScreen();
 }
 
 int Display_SH1106::getFileDevice() {
   return _fileDevice;
 }
 
-int Display_SH1106::fillFullScreen(char const * const pFullScreen){
+// 
+
+int Display_SH1106::fillFullScreen(){
   int     i, j, k       {0};
   int     result, errsv {0};
   char    str[17]       {0};
   // char *  pStr          =str;
   int    columnOffset  {0x02};
-  char originalArray[] = LOGO_ADAFRUIT;
 
   int p = 0;
 
@@ -92,31 +92,20 @@ int Display_SH1106::fillFullScreen(char const * const pFullScreen){
     sendCommand(SH1106_SETPAGE + i, SH1106_NOP);
     for ( j = 0; j < 8; j++) {
       str[0] = 0x40;       
-      for ( k = 0; k < 16; k++, p++) {
-        //str[k+1] = originalArray[p];
-        str[k+1] = pFullScreen[p];
-        if (pFullScreen[p]!=originalArray[p]){
-          printf("fill %d : got %d, original %d\n",
-            p, pFullScreen[p],originalArray[p] );
-        }
-        //printf("char: %d %d\n",p, buf2[k+1]);
-      }
+      for ( k = 0; k < 16; k++, p++) str[k+1] = _fullScreen[p];
       sendCommand(0x10+j, columnOffset); //set column address
-
       result = write(_fileDevice,(char*)str,17);
       errsv = errno;
-      sleep(0,10);
       if (result<0) {
-        std::cerr << "Failed to write -> i2c bus(fillFullScreen)" << std::endl;
+        std::cerr << "Failed to write to i2c bus **********" << std::endl;
+        std::cerr << "method Display_SH1106::fillFullScreen" << std::endl;
+        std::cerr << strerror(errsv) << std::endl;
         return result; 
-        // printf(
-        //   "Failed to write to the i2c bus commands (clear Display) %s\n", strerror(errsv));
-        // printf("error number: %d \n",errsv);
       }
     }
   }  
   
-  return result;
+  return 1;
 }
 
 // write the contents of some external file
@@ -125,21 +114,14 @@ int Display_SH1106::readFullScreen(char const * const file) {
 
   char charArray[1024];
   std::fstream in_file {file, std::ios::in | std::ios::binary};
-  char originalArray[] = LOGO_ADAFRUIT;
 
   if (!in_file) {
     std::cerr << "file open error " << std::endl;
     return -1; 
   }
   
-  for ( int i = 0; i < 1024; i++) {
-    in_file.get(charArray[i]);
-    if (charArray[i]!=originalArray[i]){
-      printf("read %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
-    }
-  }
-  printf("read");
-  compare(charArray);
+  for ( int i = 0; i < 1024; i++) in_file.get(charArray[i]);
+
   in_file.close();
 
   _pFullScreen = charArray;
@@ -149,29 +131,25 @@ int Display_SH1106::readFullScreen(char const * const file) {
 // write the contents of the class variable _pfullScreen 
 // into some external file
 int Display_SH1106::writeFullScreen(char const * const file) {
+
   std::fstream out_file {file, std::ios::out | std::ios::binary};
-  char originalArray[] = LOGO_ADAFRUIT;
 
   if (!out_file) {
     std::cerr << "file open error " << std::endl;
     return -1; 
   }
 
-  for (int i = 0; i < 1024; i++) {
-    out_file.put(_pFullScreen[i]);
-    if (_pFullScreen[i]!=originalArray[i]){
-      printf("write %d : got %d, original %d\n",i,_pFullScreen[i],originalArray[i] );
-    }
-  }
+  for (int i = 0; i < 1024; i++) out_file.put(_pFullScreen[i]);
 
   out_file.close();
+
   return 0;
 }
 
 // write the contents of the passed function variable pfullScreen 
 // into the class variable _pfullScreen
 int Display_SH1106::setFullScreen(char const * const pFullScreen){
-  _pFullScreen = (char *) pFullScreen; 
+  for ( int i = 0; i < 1024; i++) _fullScreen[i]= pFullScreen[i];
   return 0;
 }
 
@@ -190,23 +168,4 @@ int Display_SH1106::sleep(int seconds, int milliseconds){
   req.tv_sec = seconds;
   req.tv_nsec = nanoseconds;
   return nanosleep(&req , &rem);
-}
-
-int Display_SH1106::compare(char const * const pFullScreen){
-
-  char originalArray[] = LOGO_ADAFRUIT;
-
-  int p = 0;
-  int counter =0;
-  for ( p = 0; p < 1024; p++) {
-    if (pFullScreen[p]!=originalArray[p]){
-      counter ++;
-      //printf("compare %d : got %d, original %d\n",
-      //  p, pFullScreen[p],originalArray[p] );
-    }
-  }
-  printf("compare counter %d \n", counter );
-      
-  
-  return 1;
 }
