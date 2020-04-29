@@ -31,21 +31,26 @@ int main (void)
 {
   Display_SH1106 display;
   display.init();
-  display.sendCommand(SH1106_DISPLAYON, SH1106_NOP);
+  display.sendCommand(SH1106_DISPLAYON, SH1106_NORMALDISPLAY);
+  display.sendCommand(SH1106_COMSCANINC, SH1106_NOP);
   display.clearDisplay();
 
-  char originalArray[] = LOGO_ADAFRUIT;
+  //char originalArray[] = LOGO_ADAFRUIT;
   
   // int size = sizeof charArray/ sizeof charArray[0];
   //std::cout << size << std::endl;
   
-  display.setFullScreen(originalArray);
-  display.writeFullScreen("testOutFile");
+  //display.setFullScreen(originalArray);
+  //display.writeFullScreen("testOutFile");
   display.readFullScreen("testOutFile");
   display.fillFullScreen();
-
+  do { std::cout << '\n' << "Press return to continue...";
+  } while (!std::cin.get());
+  //display.clearDisplay();
   //display.sleep(4,100);
-  //display.sendCommand(SH1106_DISPLAYOFF, SH1106_NOP);
+  display.sendCommand(SH1106_INVERTDISPLAY, SH1106_COMSCANDEC);
+  display.sleep(1,100);
+  display.sendCommand(SH1106_NORMALDISPLAY, SH1106_DISPLAYOFF);
   close(display.getFileDevice());// Close Driver = release I2C bus access
   return 0;
 }

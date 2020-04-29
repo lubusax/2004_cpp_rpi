@@ -80,28 +80,25 @@ int Display_SH1106::getFileDevice() {
 // 
 
 int Display_SH1106::fillFullScreen(){
-  int     i, j, k       {0};
+  int     i, j      {0};
   int     result, errsv {0};
-  char    str[17]       {0};
-  // char *  pStr          =str;
+  char    str[131]       {0};
   int    columnOffset  {0x02};
 
   int p = 0;
 
   for ( i = 0; i < 8; i++) {
+    str[0] = 0x40; 
+    for ( j = 0; j < 128; j++, p++) str[j+1] = _fullScreen[p];
     sendCommand(SH1106_SETPAGE + i, SH1106_NOP);
-    for ( j = 0; j < 8; j++) {
-      str[0] = 0x40;       
-      for ( k = 0; k < 16; k++, p++) str[k+1] = _fullScreen[p];
-      sendCommand(0x10+j, columnOffset); //set column address
-      result = write(_fileDevice,(char*)str,17);
-      errsv = errno;
-      if (result<0) {
-        std::cerr << "Failed to write to i2c bus **********" << std::endl;
-        std::cerr << "method Display_SH1106::fillFullScreen" << std::endl;
-        std::cerr << strerror(errsv) << std::endl;
-        return result; 
-      }
+    sendCommand(0x10, columnOffset); //set column address
+    result = write(_fileDevice,(char*)str,131);
+    errsv = errno;
+    if (result<0) {
+      std::cerr << "Failed to write to i2c bus **********" << std::endl;
+      std::cerr << "method Display_SH1106::fillFullScreen" << std::endl;
+      std::cerr << strerror(errsv) << std::endl;
+      return result; 
     }
   }  
   
@@ -110,9 +107,8 @@ int Display_SH1106::fillFullScreen(){
 
 // write the contents of some external file
 // into the class variable _pfullScreen
-int Display_SH1106::readFullScreen(char const * const file) {
+int Display_SH1106::readFullScreen(const char * file) {
 
-  char charArray[1024];
   std::fstream in_file {file, std::ios::in | std::ios::binary};
 
   if (!in_file) {
@@ -120,17 +116,16 @@ int Display_SH1106::readFullScreen(char const * const file) {
     return -1; 
   }
   
-  for ( int i = 0; i < 1024; i++) in_file.get(charArray[i]);
+  for ( int i = 0; i < 1024; i++) in_file.get(_fullScreen[i]);
 
   in_file.close();
 
-  _pFullScreen = charArray;
   return 0;
 }
 
 // write the contents of the class variable _pfullScreen 
 // into some external file
-int Display_SH1106::writeFullScreen(char const * const file) {
+int Display_SH1106::writeFullScreen(const char * file) {
 
   std::fstream out_file {file, std::ios::out | std::ios::binary};
 
@@ -169,3 +164,7 @@ int Display_SH1106::sleep(int seconds, int milliseconds){
   req.tv_nsec = nanoseconds;
   return nanosleep(&req , &rem);
 }
+
+// void Display_SH1106::writePixel(int16_t x, int16_t y, uint16_t color) {
+//   drawPixel(x, y, color);
+// }

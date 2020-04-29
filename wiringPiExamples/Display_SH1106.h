@@ -76,14 +76,16 @@ class Display_SH1106 {
     int clearDisplay();
     int getFileDevice();
     int fillFullScreen();
-    int readFullScreen(char const * const file);
-    int writeFullScreen(char const * const file);
+    int readFullScreen(const char * file);
+    int writeFullScreen(const char * file);
     int setFullScreen(char const * const pFullScreen);
     char * getFullScreen();
     int sleep(int seconds, int milliseconds);
+    //void writePixel(int16_t x, int16_t y, uint16_t color);
 
   private:
     int _fileDevice;
+    char _fullScreen2[8][128];
     char _fullScreen[1024];
     char * _pFullScreen = _fullScreen;
 };
