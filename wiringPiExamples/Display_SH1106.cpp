@@ -207,7 +207,7 @@ void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c,
 void Display_SH1106::drawChar(
       int16_t x, int16_t y, unsigned char c) {
 
-  c = c - (uint8_t)(_font.first);
+  c = c - (uint8_t) _font.first;
   GFXglyph *glyph = (_font.glyph)+ c;
   uint8_t * bitmap = (_font.bitmap);
   uint16_t  bo    = (glyph->bitmapOffset);
@@ -217,9 +217,7 @@ void Display_SH1106::drawChar(
             yo    = (glyph->yOffset);
   uint8_t   xx, yy, bits = 0, bit = 0;
 
-  printf("font first: %d", c);
-
-  waitForReturnKey();
+  //printf("font first: %d", c);
 
   // Todo: Add character clipping here
 
@@ -239,8 +237,6 @@ void Display_SH1106::drawChar(
 
 void Display_SH1106::setFont(const GFXfont f) {
   
-  //printf("GFXfont pointer: %d", &f);
-  //waitForReturnKey();
   _font = f;
   
   return;
