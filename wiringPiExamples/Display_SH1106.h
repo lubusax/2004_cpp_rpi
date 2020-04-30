@@ -2,8 +2,11 @@
 #ifndef __DISPLAY_SH1106_H__
 #define __DISPLAY_SH1106_H__
 
+#include "gfxfont.h"
+
 #define MAX_WRITE_BUFFER_SIZE         133
 #define SH1106_I2C_ADDRESS            0x3C // 011110+SA0+RW - 0x3C or 0x3D
+
 #define CONTROL_BYTE_LAST_COMMAND     0x00
 
 #define BLACK 0
@@ -85,16 +88,20 @@ class Display_SH1106 {
     void drawPixel(int16_t x, int16_t y, uint16_t color);
     void drawPixel(int16_t x, int16_t y);
     void drawChar(int16_t x, int16_t y, unsigned char c,
-                            uint16_t color, uint16_t bg, uint8_t size_x,
-                            uint8_t size_y);
+                  uint16_t color, uint16_t bg, uint8_t size_x,
+                  uint8_t size_y);
+    void drawChar(int16_t x, int16_t y, unsigned char c);
     void waitForReturnKey();
+    void setFont(const GFXfont f);
 
-  private:
-    int _fileDevice, _width, _height;
-    
-    char _fullScreen2[8][128];
-    char _fullScreen[1024];
-    char * _pFullScreen = _fullScreen;
+  protected:
+    int         _fileDevice,
+                _width,
+                _height;
+    char        _fullScreen[1024];
+    char *      _pFullScreen = _fullScreen;
+    GFXfont     _font;   ///< Pointer to special font
+    GFXfont *   _pFont = &_font;
 };
 
 // 1024 bytes

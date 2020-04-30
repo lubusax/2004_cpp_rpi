@@ -26,6 +26,7 @@
 #include <iomanip>
 
 #include "Display_SH1106.h"
+#include "FreeSansBold12pt7b.h"
 
 int main (void)
 {
@@ -34,6 +35,13 @@ int main (void)
   display.sendCommand(SH1106_DISPLAYON, SH1106_NORMALDISPLAY);
   display.sendCommand(SH1106_COMSCANINC, SH1106_NOP);
   display.clearDisplay();
+  printf("Display cleared");
+  const GFXfont font = FreeSansBold12pt7b;
+  // const GFXfont * p_font = &font;
+  display.setFont(font);
+  printf("Font set");
+  unsigned char c = 0x38;
+  display.drawChar(20,20,c);
 
   //char originalArray[] = LOGO_ADAFRUIT;
   

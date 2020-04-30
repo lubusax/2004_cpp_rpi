@@ -56,7 +56,7 @@ int Display_SH1106::init() {
 int Display_SH1106::sendCommand(const char c1, const char c2) { 
   static char   str[3] = {0};
   char *        buf = str;
-  str[0] = 0x00;
+  str[0] = CONTROL_BYTE_LAST_COMMAND;
   str[1] = c1;
   str[2] = c2;
   int           result = write(_fileDevice,buf,3);
@@ -204,25 +204,29 @@ void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c,
   return;
 }
 
-void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c) {
-  // define gfxFont
-  c               -= (uint8_t)pgm_read_byte(&gfxFont->first);
-  GFXglyph *glyph = pgm_read_glyph_ptr(gfxFont, c);
-  uint8_t *bitmap = pgm_read_bitmap_ptr(gfxFont);
-  uint16_t  bo    = pgm_read_word(&glyph->bitmapOffset);
-  uint8_t   w     = pgm_read_byte(&glyph->width),
-            h     = pgm_read_byte(&glyph->height);
-  int8_t    xo    = pgm_read_byte(&glyph->xOffset),
-            yo    = pgm_read_byte(&glyph->yOffset);
+void Display_SH1106::drawChar(
+      int16_t x, int16_t y, unsigned char c) {
+
+  c = c - (uint8_t)(_font.first);
+  GFXglyph *glyph = (_font.glyph)+ c;
+  uint8_t * bitmap = (_font.bitmap);
+  uint16_t  bo    = (glyph->bitmapOffset);
+  uint8_t   w     = (glyph->width),
+            h     = (glyph->height);
+  int8_t    xo    = (glyph->xOffset),
+            yo    = (glyph->yOffset);
   uint8_t   xx, yy, bits = 0, bit = 0;
-  int16_t   xo16 = 0, yo16 = 0;
+
+  printf("font first: %d", c);
+
+  waitForReturnKey();
 
   // Todo: Add character clipping here
 
   for (yy = 0; yy < h; yy++) {
     for (xx = 0; xx < w; xx++) {
       if (!(bit++ & 7)) {
-        bits = pgm_read_byte(&bitmap[bo++]);
+        bits = (bitmap[bo++]);
       }
       if (bits & 0x80) {
           drawPixel(x + xo + xx, y + yo + yy);
@@ -230,5 +234,14 @@ void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c) {
       bits <<= 1;
     }
   }
+  return;
+}
+
+void Display_SH1106::setFont(const GFXfont f) {
+  
+  //printf("GFXfont pointer: %d", &f);
+  //waitForReturnKey();
+  _font = f;
+  
   return;
 }
