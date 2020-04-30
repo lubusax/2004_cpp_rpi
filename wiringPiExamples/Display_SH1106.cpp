@@ -3,7 +3,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
-#include <string.h>
+#include <string>
+#include <cstring>
 #include <sys/ioctl.h>
 #include <asm/ioctl.h>
 #include <fcntl.h>
@@ -14,6 +15,8 @@
 #include <iostream>
 
 #include "Display_SH1106.h"
+
+using namespace std;
 
 #define sh1106_swap(a, b) { int16_t t = a; a = b; b = t; }
 
@@ -197,22 +200,29 @@ void Display_SH1106::waitForReturnKey() {
   return;
 }
 
-void Display_SH1106::drawChar(int16_t x, int16_t y, unsigned char c,
-                            uint16_t color, uint16_t bg, uint8_t size_x,
-                            uint8_t size_y) {
+void Display_SH1106::drawChar
+(int16_t x, int16_t y, unsigned char c, uint16_t color,
+uint16_t bg, uint8_t size_x, uint8_t size_y) {
   drawChar(x,y,c);
   return;
 }
 
-void Display_SH1106::drawChar(
-      int16_t x, int16_t y, unsigned char c) {
+void Display_SH1106::drawChar (unsigned char c) {
+  int16_t x = _cursor_x;
+  int16_t y = _cursor_y;
+  drawChar(x,y,c);
+  return;
+}
 
-  c = c - (uint8_t) _font.first;
-  GFXglyph *glyph = (_font.glyph)+ c;
-  uint8_t * bitmap = (_font.bitmap);
+void Display_SH1106::drawChar
+(int16_t x, int16_t y, unsigned char c) {
+
+  c               = c - _first;
+  GFXglyph * glyph = _glyph + c;
   uint16_t  bo    = (glyph->bitmapOffset);
   uint8_t   w     = (glyph->width),
-            h     = (glyph->height);
+            h     = (glyph->height),
+            xAdvance = (glyph->xAdvance);
   int8_t    xo    = (glyph->xOffset),
             yo    = (glyph->yOffset);
   uint8_t   xx, yy, bits = 0, bit = 0;
@@ -224,7 +234,7 @@ void Display_SH1106::drawChar(
   for (yy = 0; yy < h; yy++) {
     for (xx = 0; xx < w; xx++) {
       if (!(bit++ & 7)) {
-        bits = (bitmap[bo++]);
+        bits = _bitmap[bo++];
       }
       if (bits & 0x80) {
           drawPixel(x + xo + xx, y + yo + yy);
@@ -232,12 +242,50 @@ void Display_SH1106::drawChar(
       bits <<= 1;
     }
   }
+  setCursor(_cursor_x+xAdvance,y);
   return;
 }
 
 void Display_SH1106::setFont(const GFXfont f) {
   
   _font = f;
+  _first = (uint8_t) _font.first;
+  _glyph = _font.glyph;
+  _bitmap = _font.bitmap;
   
   return;
+}
+
+void Display_SH1106::setCursor(int16_t x, int16_t y) {
+  if (x>=0 and x< _width and y>=0 and y<_height){
+    _cursor_x = x;
+    _cursor_y = y; 
+  }
+  else {
+    std::cerr << "Trying to set the cursor out of limits*" << std::endl;
+    return;
+  }
+  return;
+}
+
+int Display_SH1106::getCursorX() {
+  return _cursor_x;
+}
+
+int Display_SH1106::getCursorY() {
+  return _cursor_y;
+}
+
+int Display_SH1106::widthString(){
+  string s ="13:09";
+  uint8_t width {0};
+  uint8_t xAdvance {0};
+  unsigned char c {0};
+  GFXglyph * glyph {0};
+  for (uint8_t i = 0; i < s.length(); i++) {
+    c = (unsigned char) s[i] - _first;
+    glyph = _glyph + c;
+    width += glyph->xAdvance;
+  }
+  return (int) width;
 }

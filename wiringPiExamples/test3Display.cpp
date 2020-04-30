@@ -31,25 +31,43 @@
 #include "FreeSansBold24pt7b.h"
 #include "FreeSans24pt7b.h"
 
+using namespace std;
+
 int main (void)
 {
   Display_SH1106 display;
   display.init();
-  display.sendCommand(SH1106_DISPLAYON, SH1106_NORMALDISPLAY);
+  display.sendCommand(SH1106_DISPLAYON, SH1106_INVERTDISPLAY);
   display.sendCommand(SH1106_COMSCANINC, SH1106_NOP);
   display.clearDisplay();
   
   const GFXfont font = FreeSans24pt7b;
-  // const GFXfont * p_font = &font;
-  display.setFont(font);
+  time_t rawtime;
+  struct tm * timeinfo;
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+  int hour = timeinfo->tm_hour;
+  int min = timeinfo->tm_min;
+  string clock= to_string(hour)+":"+to_string(min);
   
-  unsigned char c = 0x38;
-  display.drawChar(10,40,c);
+  
+  display.setFont(font);
 
+  int widthString = display.widthString();
+  
+  display.setCursor(10,40);
+  unsigned char c = 0x38;
+  display.drawChar(c);
+  c--;
+  display.drawChar(c);
+  c--;
+  display.drawChar(c);
+  c--;
+  display.drawChar(c);
   //char originalArray[] = LOGO_ADAFRUIT;
   
   // int size = sizeof charArray/ sizeof charArray[0];
-  //std::cout << size << std::endl;
+  //cout << size << endl;
   
   //display.setFullScreen(originalArray);
   //display.writeFullScreen("testOutFile");
@@ -60,7 +78,7 @@ int main (void)
   
   //display.clearDisplay();
   //display.sleep(4,100);
-  display.sendCommand(SH1106_INVERTDISPLAY, SH1106_COMSCANDEC);
+  display.sendCommand(SH1106_NORMALDISPLAY, SH1106_COMSCANDEC);
   display.sleep(1,100);
   display.sendCommand(SH1106_NORMALDISPLAY, SH1106_DISPLAYOFF);
   close(display.getFileDevice());// Close Driver = release I2C bus access
