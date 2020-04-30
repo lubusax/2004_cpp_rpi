@@ -98,7 +98,7 @@ class Display_SH1106 {
     void setCursor(int16_t x, int16_t y);
     int getCursorX();
     int getCursorY();
-    int widthString();
+    int widthString(string s);
 
   protected:
     int         _fileDevice {0},

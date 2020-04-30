@@ -53,8 +53,9 @@ int main (void)
   
   display.setFont(font);
 
-  int widthString = display.widthString();
-  
+  int widthString = display.widthString(clock);
+  printf("width %d ",widthString);
+
   display.setCursor(10,40);
   unsigned char c = 0x38;
   display.drawChar(c);

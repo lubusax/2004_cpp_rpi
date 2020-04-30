@@ -276,15 +276,11 @@ int Display_SH1106::getCursorY() {
   return _cursor_y;
 }
 
-int Display_SH1106::widthString(){
-  string s ="13:09";
+int Display_SH1106::widthString(string s){
   uint8_t width {0};
-  uint8_t xAdvance {0};
-  unsigned char c {0};
   GFXglyph * glyph {0};
   for (uint8_t i = 0; i < s.length(); i++) {
-    c = (unsigned char) s[i] - _first;
-    glyph = _glyph + c;
+    glyph = _glyph + s[i] - _first;
     width += glyph->xAdvance;
   }
   return (int) width;
