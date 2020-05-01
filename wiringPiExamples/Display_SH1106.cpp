@@ -298,7 +298,13 @@ int Display_SH1106::widthString(string s){
   if (_fontDefined) {
     for (uint8_t i = 0; i < s.length(); i++) {
       glyph = _glyph + s[i] - _first;
-      width += glyph->xAdvance;
+      if (i==0) width += glyph->xOffset;
+      if (i==(s.length()-1)) {
+        width += glyph->width;
+      }
+      else{
+        width += glyph->xAdvance;
+      }
     }
   }
   return (int) width;
@@ -336,7 +342,6 @@ string Display_SH1106::getTime(){
 int Display_SH1106::displayTime(){
   string clock = getTime();
   int height = maxHeightString(clock);
-    printf("- height %d ", height);
   int y = (int) (_height + height)/2;
   setCursor(_cursor_x,y);
   displayString(clock);
@@ -345,7 +350,6 @@ int Display_SH1106::displayTime(){
 
 int Display_SH1106::displayString(string s){
   int width= widthString(s);
-  printf("width %d ", width);
   int x = (int) (_width - width)/2;
   x--;
   setCursor(x,_cursor_y);

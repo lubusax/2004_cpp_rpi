@@ -6,3 +6,7 @@ g++ -Wall -o test2Display test2Display.cpp
 
 g++ -Wall -o test3Display test3Display.cpp Display_SH1106.cpp
 ./test3Display
+
+https://learn.adafruit.com/adafruit-gfx-graphics-library/using-fonts
+./fontconvert FreeSans.ttf 20 > FreeSans20pt7b.h
+cp FreeSans20pt7b.h ~/Documents/2004_cpp_rpi/wiringPiExamples/

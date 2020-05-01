@@ -28,11 +28,19 @@
 #include "Display_SH1106.h"
 //#include "FreeSansBold12pt7b.h"
 //#include "FreeSansBold18pt7b.h"
+//#include "FreeSansBold20pt7b.h"
 //#include "FreeSansBold24pt7b.h"
-#include "FreeSans24pt7b.h"
-#include "FreeSans18pt7b.h"
+//#include "FreeSans24pt7b.h"
+//#include "FreeSans20pt7b.h"
+//#include "FreeSans18pt7b.h"
 //#include "FreeSans12pt7b.h"
-#include "FreeSans9pt7b.h"
+//#include "FreeSans9pt7b.h"
+//#include "FreeSans7pt7b.h"
+#include "Orkney20pt7b.h"
+#include "OrkneyRegular20pt7b.h"
+//#include "Orkney8pt7b.h"
+#include "OrkneyRegular9pt7b.h"
+#include "OrkneyMedium9pt7b.h"
 
 using namespace std;
 
@@ -44,25 +52,25 @@ int main (void)
   display.sendCommand(SH1106_COMSCANINC, SH1106_NOP);
   display.clearDisplay();
   
-  GFXfont font = FreeSans24pt7b;
+  GFXfont font = OrkneyRegular20pt7b;
   display.setFont(font);
 
   display.displayTime();
 
-  display.setCursor(0,60);
-  font = FreeSans9pt7b;
+  display.setCursor(0,61);
+  font = OrkneyMedium9pt7b;
   display.setFont(font);
 
-  string test="odoo ok";
+  string test="odoo";
   display.displayString(test);
 
   display.fillFullScreen();
-  display.waitForReturnKey();
+  //display.waitForReturnKey();
   
 
-  display.sendCommand(SH1106_NORMALDISPLAY, SH1106_COMSCANDEC);
-  display.sleep(1,100);
-  display.sendCommand(SH1106_NORMALDISPLAY, SH1106_DISPLAYOFF);
+  //display.sendCommand(SH1106_NORMALDISPLAY, SH1106_COMSCANDEC);
+  //display.sleep(1,100);
+  //display.sendCommand(SH1106_NORMALDISPLAY, SH1106_DISPLAYOFF);
   close(display.getFileDevice());// Close Driver = release I2C bus access
   return 0;
 }

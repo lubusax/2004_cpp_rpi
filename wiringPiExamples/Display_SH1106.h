@@ -5,6 +5,8 @@
 #include "gfxfont.h"
 using namespace std;
 
+#define PROGMEM 
+
 #define MAX_WRITE_BUFFER_SIZE         133
 #define SH1106_I2C_ADDRESS            0x3C // 011110+SA0+RW - 0x3C or 0x3D
 
