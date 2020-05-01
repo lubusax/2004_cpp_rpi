@@ -217,38 +217,40 @@ void Display_SH1106::drawChar (unsigned char c) {
 
 void Display_SH1106::drawChar
 (int16_t x, int16_t y, unsigned char c) {
+  if (_fontDefined) {
+    c               = c - _first;
+    GFXglyph * glyph = _glyph + c;
+    uint16_t  bo    = (glyph->bitmapOffset);
+    uint8_t   w     = (glyph->width),
+              h     = (glyph->height),
+              xAdvance = (glyph->xAdvance);
+    int8_t    xo    = (glyph->xOffset),
+              yo    = (glyph->yOffset);
+    uint8_t   xx, yy, bits = 0, bit = 0;
 
-  c               = c - _first;
-  GFXglyph * glyph = _glyph + c;
-  uint16_t  bo    = (glyph->bitmapOffset);
-  uint8_t   w     = (glyph->width),
-            h     = (glyph->height),
-            xAdvance = (glyph->xAdvance);
-  int8_t    xo    = (glyph->xOffset),
-            yo    = (glyph->yOffset);
-  uint8_t   xx, yy, bits = 0, bit = 0;
+    //printf("font first: %d", c);
 
-  //printf("font first: %d", c);
+    // Todo: Add character clipping here
 
-  // Todo: Add character clipping here
-
-  for (yy = 0; yy < h; yy++) {
-    for (xx = 0; xx < w; xx++) {
-      if (!(bit++ & 7)) {
-        bits = _bitmap[bo++];
+    for (yy = 0; yy < h; yy++) {
+      for (xx = 0; xx < w; xx++) {
+        if (!(bit++ & 7)) {
+          bits = _bitmap[bo++];
+        }
+        if (bits & 0x80) {
+            drawPixel(x + xo + xx, y + yo + yy);
+        }
+        bits <<= 1;
       }
-      if (bits & 0x80) {
-          drawPixel(x + xo + xx, y + yo + yy);
-      }
-      bits <<= 1;
     }
+    setCursor(_cursor_x+xAdvance,y);
   }
-  setCursor(_cursor_x+xAdvance,y);
   return;
 }
 
-void Display_SH1106::setFont(const GFXfont f) {
+void Display_SH1106::setFont(GFXfont f) {
   
+  _fontDefined = 1;
   _font = f;
   _first = (uint8_t) _font.first;
   _glyph = _font.glyph;
@@ -293,11 +295,27 @@ int Display_SH1106::getCursorY() {
 int Display_SH1106::widthString(string s){
   uint8_t width {0};
   GFXglyph * glyph {0};
-  for (uint8_t i = 0; i < s.length(); i++) {
-    glyph = _glyph + s[i] - _first;
-    width += glyph->xAdvance;
+  if (_fontDefined) {
+    for (uint8_t i = 0; i < s.length(); i++) {
+      glyph = _glyph + s[i] - _first;
+      width += glyph->xAdvance;
+    }
   }
   return (int) width;
+}
+
+int Display_SH1106::maxHeightString(string s){
+  uint8_t maxHeight {0};
+  uint8_t height {0};
+  GFXglyph * glyph {0};
+  if (_fontDefined) {
+    for (uint8_t i = 0; i < s.length(); i++) {
+      glyph = _glyph + s[i] - _first;
+      height = glyph->height;
+      if (height>maxHeight) maxHeight=height;
+    }
+  }
+  return (int) maxHeight;
 }
 
 string Display_SH1106::getTime(){
@@ -317,16 +335,20 @@ string Display_SH1106::getTime(){
 
 int Display_SH1106::displayTime(){
   string clock = getTime();
-  int width= widthString(clock);
-  printf("width %d ", width);
-  int x = (int) (_width - width)/2;
-  x--;
-  setCursor(x,_yClock);
+  int height = maxHeightString(clock);
+    printf("- height %d ", height);
+  int y = (int) (_height + height)/2;
+  setCursor(_cursor_x,y);
   displayString(clock);
   return 1;
 }
 
 int Display_SH1106::displayString(string s){
+  int width= widthString(s);
+  printf("width %d ", width);
+  int x = (int) (_width - width)/2;
+  x--;
+  setCursor(x,_cursor_y);
   for (uint8_t i = 0; i < s.length(); i++) {
     drawChar(s[i]);
   }

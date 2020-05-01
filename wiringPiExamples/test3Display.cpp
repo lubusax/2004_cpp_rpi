@@ -26,10 +26,13 @@
 #include <iomanip>
 
 #include "Display_SH1106.h"
-#include "FreeSansBold12pt7b.h"
-#include "FreeSansBold18pt7b.h"
-#include "FreeSansBold24pt7b.h"
+//#include "FreeSansBold12pt7b.h"
+//#include "FreeSansBold18pt7b.h"
+//#include "FreeSansBold24pt7b.h"
 #include "FreeSans24pt7b.h"
+#include "FreeSans18pt7b.h"
+//#include "FreeSans12pt7b.h"
+#include "FreeSans9pt7b.h"
 
 using namespace std;
 
@@ -41,10 +44,17 @@ int main (void)
   display.sendCommand(SH1106_COMSCANINC, SH1106_NOP);
   display.clearDisplay();
   
-  const GFXfont font = FreeSans24pt7b;
+  GFXfont font = FreeSans24pt7b;
   display.setFont(font);
 
   display.displayTime();
+
+  display.setCursor(0,60);
+  font = FreeSans9pt7b;
+  display.setFont(font);
+
+  string test="odoo ok";
+  display.displayString(test);
 
   display.fillFullScreen();
   display.waitForReturnKey();

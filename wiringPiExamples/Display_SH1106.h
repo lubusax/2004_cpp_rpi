@@ -94,17 +94,19 @@ class Display_SH1106 {
     void drawChar(int16_t x, int16_t y, unsigned char c);
     void drawChar(unsigned char c);
     void waitForReturnKey();
-    void setFont(const GFXfont f);
+    void setFont(GFXfont f);
     void setCursor(int16_t x, int16_t y);
     int getCursorX();
     int getCursorY();
     int widthString(string s);
+    int maxHeightString(string s);
     string getTime();
     int displayTime();
     int displayString(string s);
 
   protected:
     int         _fileDevice {0},
+                _fontDefined {0},
                 _width {0},
                 _height {0},
                 _cursor_x {0},
