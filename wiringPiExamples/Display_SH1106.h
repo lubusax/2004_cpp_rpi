@@ -99,13 +99,17 @@ class Display_SH1106 {
     int getCursorX();
     int getCursorY();
     int widthString(string s);
+    string getTime();
+    int displayTime();
+    int displayString(string s);
 
   protected:
     int         _fileDevice {0},
                 _width {0},
                 _height {0},
                 _cursor_x {0},
-                _cursor_y {0};
+                _cursor_y {0},
+                _yClock {0}; // at which height (y) hh:mm will be displayed
     char        _fullScreen[1024] {0};
     char *      _pFullScreen = _fullScreen;
     GFXfont     _font {0};   ///< Pointer to special font

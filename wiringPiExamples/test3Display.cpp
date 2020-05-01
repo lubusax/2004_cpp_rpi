@@ -42,43 +42,14 @@ int main (void)
   display.clearDisplay();
   
   const GFXfont font = FreeSans24pt7b;
-  time_t rawtime;
-  struct tm * timeinfo;
-  time (&rawtime);
-  timeinfo = localtime (&rawtime);
-  int hour = timeinfo->tm_hour;
-  int min = timeinfo->tm_min;
-  string clock= to_string(hour)+":"+to_string(min);
-  
-  
   display.setFont(font);
 
-  int widthString = display.widthString(clock);
-  printf("width %d ",widthString);
-
-  display.setCursor(10,40);
-  unsigned char c = 0x38;
-  display.drawChar(c);
-  c--;
-  display.drawChar(c);
-  c--;
-  display.drawChar(c);
-  c--;
-  display.drawChar(c);
-  //char originalArray[] = LOGO_ADAFRUIT;
-  
-  // int size = sizeof charArray/ sizeof charArray[0];
-  //cout << size << endl;
-  
-  //display.setFullScreen(originalArray);
-  //display.writeFullScreen("testOutFile");
-  //for (int i=0; i < 64; i++) display.drawPixel(i,i);
+  display.displayTime();
 
   display.fillFullScreen();
   display.waitForReturnKey();
   
-  //display.clearDisplay();
-  //display.sleep(4,100);
+
   display.sendCommand(SH1106_NORMALDISPLAY, SH1106_COMSCANDEC);
   display.sleep(1,100);
   display.sendCommand(SH1106_NORMALDISPLAY, SH1106_DISPLAYOFF);

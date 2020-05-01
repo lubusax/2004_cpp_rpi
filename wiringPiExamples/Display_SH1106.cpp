@@ -29,6 +29,7 @@ int Display_SH1106::init() {
 
   _width = SH1106_WIDTH;  //128
   _height = SH1106_HEIGHT; //64
+  _yClock = 50; // at which height (y) hh:mm will be displayed
 
   // opening this file open, we open the bus
     // (acquire I2C bus access) for reading and writing.
@@ -257,14 +258,27 @@ void Display_SH1106::setFont(const GFXfont f) {
 }
 
 void Display_SH1106::setCursor(int16_t x, int16_t y) {
-  if (x>=0 and x< _width and y>=0 and y<_height){
-    _cursor_x = x;
-    _cursor_y = y; 
+  if (x<=0) {
+    _cursor_x=0;
+    cerr << "Trying to set the x of the cursor <=0" << endl;
   }
   else {
-    std::cerr << "Trying to set the cursor out of limits*" << std::endl;
-    return;
+    if (x>_width) {
+      _cursor_x=_width;
+      cerr << "Trying to set the x of the cursor > width" << endl;
+    }
+    else _cursor_x = x;}
+  
+  if (y<=0) {
+    _cursor_y=0;
+    cerr << "Trying to set the y of the cursor <=0" << endl;
   }
+  else {
+    if (y>_width) {
+      _cursor_y=_width;
+      cerr << "Trying to set the y of the cursor > height" << endl;
+    }
+    else _cursor_y = y;}
   return;
 }
 
@@ -284,4 +298,37 @@ int Display_SH1106::widthString(string s){
     width += glyph->xAdvance;
   }
   return (int) width;
+}
+
+string Display_SH1106::getTime(){
+  time_t rawtime;
+  struct tm * timeinfo;
+  time (&rawtime);
+  timeinfo = localtime (&rawtime);
+  int hour = timeinfo->tm_hour;
+  int min = timeinfo->tm_min;
+  string s_hour = to_string(hour);
+  string s_min = to_string(min);
+  if (hour<10) s_hour="0"+s_hour;
+  if (min<10) s_min="0"+s_min;
+  string clock= s_hour + ":" + s_min;
+  return clock;
+}
+
+int Display_SH1106::displayTime(){
+  string clock = getTime();
+  int width= widthString(clock);
+  printf("width %d ", width);
+  int x = (int) (_width - width)/2;
+  x--;
+  setCursor(x,_yClock);
+  displayString(clock);
+  return 1;
+}
+
+int Display_SH1106::displayString(string s){
+  for (uint8_t i = 0; i < s.length(); i++) {
+    drawChar(s[i]);
+  }
+  return 1;
 }
